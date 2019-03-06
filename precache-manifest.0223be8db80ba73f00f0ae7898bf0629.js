@@ -4,19 +4,19 @@ self.__precacheManifest = [
     "url": "/orbit-game-app/static/js/runtime~main.6c334a69.js"
   },
   {
-    "revision": "d3887716e3c2b7321e82",
-    "url": "/orbit-game-app/static/js/main.d3887716.chunk.js"
+    "revision": "77b63df2b2c2e5c23944",
+    "url": "/orbit-game-app/static/js/main.77b63df2.chunk.js"
   },
   {
     "revision": "c51d20d6ac4776f012ae",
     "url": "/orbit-game-app/static/js/2.c51d20d6.chunk.js"
   },
   {
-    "revision": "d3887716e3c2b7321e82",
+    "revision": "77b63df2b2c2e5c23944",
     "url": "/orbit-game-app/static/css/main.dd87863d.chunk.css"
   },
   {
-    "revision": "cef9c69ca57da3111a2e281fb19833f1",
+    "revision": "9c6184a53d09194cc8c68ada413e1bf4",
     "url": "/orbit-game-app/index.html"
   }
 ];
