@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/orbit-game-app/precache-manifest.0223be8db80ba73f00f0ae7898bf0629.js"
+  "/orbit-game-app/precache-manifest.b3e98cafb54d88a3339502c8dd40328e.js"
 );
 
 workbox.clientsClaim();
