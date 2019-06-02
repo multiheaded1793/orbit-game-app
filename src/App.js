@@ -151,8 +151,11 @@ class OrbitGame extends Component {
       },
       resources: {
         matter: 100,
+        mInc: 0,
         energy: 1500,
+        eInc: 0,
         psi: 100,
+        psiInc: 0,
         hm: 0,
       },
       keys: {
@@ -232,7 +235,7 @@ class OrbitGame extends Component {
   selectOnCanvas(pos) {
     const bodies = [...this.state.world.bodies];
     for (let body of bodies) {
-      if (objectDistance(pos, body) < body.size*1.25) {
+      if (objectDistance(pos, body) < body.size*1.5) {
         // console.log(body.name)
         return this.setState((prevState) => {
           return {
@@ -282,6 +285,7 @@ class OrbitGame extends Component {
           name: 'Power grid',
           lvl: 1,
         };
+        this.setState({ resources: {...this.state.resources, eInc: this.state.resources.eInc+1}});
         break;
       }
       case 2: {
@@ -291,6 +295,7 @@ class OrbitGame extends Component {
           name: 'Ansible',
           lvl: 1,
         };
+        this.setState({ resources: {...this.state.resources, psiInc: this.state.resources.psiInc+1}});
         break;
       }
       default: {
@@ -1195,6 +1200,17 @@ class OrbitGame extends Component {
     }
   }
 
+  economyUpdate() {
+    //increment resources from buildings here, etc
+    const res = {...this.state.resources}
+    if (this.state.tick%20===0) {
+      res.matter += res.mInc;
+      res.energy += res.eInc;
+      res.psi += res.psiInc;
+      this.setState({ resources: res});
+    }
+  }
+
   handlePauseStart() {
     if (this.state.inGame === false) {
       this.continueGame();
@@ -1284,10 +1300,11 @@ class OrbitGame extends Component {
       if (this.state.mousedown||this.state.beamPhase) {
         this.beamBlastPower();
       }
+      this.economyUpdate()
       //return
-      if (this.state.inGame === true) {
-        return this.animationID = requestAnimationFrame((t) => {this.update(t)});
-      }
+      // if (this.state.inGame === true) {
+      //   return this.animationID = requestAnimationFrame((t) => {this.update(t)});
+      // }
     }
     //loop on
     if (this.state.inGame === "loading") {
@@ -1354,7 +1371,7 @@ class OrbitGame extends Component {
       <button style={{backgroundColor: '#30405E', padding:'0.2em', margin:'2em 0.5em 0.5em'}} onClick={this.handleCloseModal}>Close</button>
       </Modal>
       <StatsDisplay ui={ui} />
-      <p>WASD to accelerate</p>
+      <p>WASD to accelerate. Click, hold and release for a homing beam blast.</p>
       <Controls ui={ui}>
       <ButtonBlock ui={ui}>
       {controlButtons}
@@ -1383,9 +1400,9 @@ const GUIWrap = ({ ui, children }) => (
 );
 const StatsDisplay = ({ ui }) => (
   <div className="interface-element" style={{fontSize:"1.1em",margin:'0.2em auto 0.2em 2em',width:"100%",padding:"0.1em",transitionDuration:'0',display:"block"}}>
-  <p style={{textAlign:'left'}}>{`Stage: ${ui.stage} || Score: ${ui.currentScore}`}</p>
-  <p style={{textAlign:'left'}}>{`Stable matter: ${ui.resources.matter} || Stable energy: ${ui.resources.energy} || Dark matter: ${ui.resources.matter} || Dark energy: ${ui.resources.energy}`}</p>
-  <p style={{textAlign:'left'}}>{`Concentration: ${ui.resources.psi} || Flux: ${ui.currentScore} || Choir: ${ui.resources.psi} || Communion: ${ui.resources.psi}`}</p>
+  <p style={{textAlign:'left'}}>{`Stage: ${ui.stage}`}</p>
+  <p style={{textAlign:'left'}}>{`Stable matter: ${ui.resources.matter} (+${ui.resources.mInc}) || Stable energy: ${ui.resources.energy} (+${ui.resources.eInc}) || Dark matter: 0 || Dark energy: 0`}</p>
+  <p style={{textAlign:'left'}}>{`Concentration: ${ui.resources.psi} (+${ui.resources.psiInc}) || Flux: 0 || Choir: 0 || Communion: ${ui.currentScore}`}</p>
   </div>
 );
 
@@ -2349,7 +2366,7 @@ class GameCanvas extends React.Component {
     emitter.addInitialize(new Proton.V(0.5,angle,'polar'));
 
     emitter.addBehaviour(new Proton.Alpha(0.5,0.75));
-    emitter.addBehaviour(new Proton.Color('#0029FF','#EEEEFF'));
+    emitter.addBehaviour(new Proton.Color('#0029FF','#AA9AFF'));
     // emitter.addBehaviour(new Proton.Color('#8F1580','#0029FF'));
     emitter.addBehaviour(new Proton.Scale(s1,s2));
     emitter.addBehaviour(new Proton.CrossZone(new Proton.RectZone(0,0,700,700),'dead'));
@@ -2379,7 +2396,7 @@ class GameCanvas extends React.Component {
     emitter.addInitialize(new Proton.Radius(r));
     emitter.addInitialize(new Proton.V(0.5,angle,'polar'));
     emitter.addBehaviour(new Proton.Alpha(0.5,0.75));
-    emitter.addBehaviour(new Proton.Color('#8F1580','#EEEEFF'));
+    emitter.addBehaviour(new Proton.Color('#8F1580','#FEAEFF'));
     emitter.addBehaviour(new Proton.Scale(s1,s2));
     emitter.addBehaviour(new Proton.CrossZone(new Proton.RectZone(0,0,700,700),'bounce'));
     emitter.blastAttract = new Proton.Attraction(target, 35, 600);
