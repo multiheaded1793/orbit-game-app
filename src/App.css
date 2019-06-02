@@ -50,6 +50,15 @@ canvas {
   display: block;
   background: #2d3c5a;
   margin: 0.5em 0 0 0.5em;
+  position: relative;
+  z-index: 0;
+}
+
+#canvas-overlay {
+  position: absolute;
+  z-index: 1;
+  background-color: transparent;
+  cursor: crosshair;
 }
 
 button {
@@ -64,6 +73,15 @@ button {
   border-radius: 3px;
   transition-duration: 0.1s;
   margin: 0.2em;
+}
+
+.extra {
+  font-size: 1.1em;
+  position: sticky;
+  text-align: right;
+  right: 2em;
+  bottom: 2em;
+  width: 95%;
 }
 
 button:hover {
@@ -99,6 +117,7 @@ button:hover {
   /* margin: 0em 1em 0.5em; */
   max-width: 50%;
   padding: 0.2em;
+  position: relative;
 }
 
 .game-controls {
