@@ -156,6 +156,8 @@ class OrbitGame extends Component {
         eInc: 0,
         psi: 100,
         psiInc: 0,
+        psiFlux: 0,
+        psiChoir: 0,
         hm: 0,
       },
       keys: {
@@ -279,23 +281,39 @@ class OrbitGame extends Component {
         break;
       }
       case 1: {
+        if (this.state.resources.matter>5) {
         target.status.buildings[type] ?
         target.status.buildings[type].lvl++:
         target.status.buildings[type] = {
           name: 'Power grid',
           lvl: 1,
         };
-        this.setState({ resources: {...this.state.resources, eInc: this.state.resources.eInc+1}});
+        this.setState({ resources: {...this.state.resources, eInc: this.state.resources.eInc+1, matter: this.state.resources.matter-5}});
+        }
         break;
       }
       case 2: {
+        if (this.state.resources.matter>10) {
         target.status.buildings[type] ?
         target.status.buildings[type].lvl++:
         target.status.buildings[type] = {
           name: 'Ansible',
           lvl: 1,
         };
-        this.setState({ resources: {...this.state.resources, psiInc: this.state.resources.psiInc+1}});
+        this.setState({ resources: {...this.state.resources, psiInc: this.state.resources.psiInc+1, matter: this.state.resources.matter-10}});
+        }
+        break;
+      }
+      case 3: {
+        if (this.state.resources.matter>5) {
+        target.status.buildings[type] ?
+        target.status.buildings[type].lvl++:
+        target.status.buildings[type] = {
+          name: 'Choir relay',
+          lvl: 1,
+        };
+        this.setState({ resources: {...this.state.resources, psiChoir: this.state.resources.psiChoir+1, matter: this.state.resources.matter-5}});
+        }
         break;
       }
       default: {
@@ -1047,7 +1065,7 @@ class OrbitGame extends Component {
     if (this.state.mousedown && this.state.resources.energy > 0 && this.state.mouseTick%2===0) {
       for (let planet of bodies) {
         if (planet) {
-          planet.getsPulled(10, this.state.mouseObj, this.state.mouseTick)
+          // planet.getsPulled(10, this.state.mouseObj, this.state.mouseTick)
         }
       }
       this.setState({ resources: {...this.state.resources, energy: this.state.resources.energy-1} });
@@ -1078,6 +1096,10 @@ class OrbitGame extends Component {
         this.setState((prevState) => {
           return {
             currentScore: prevState.currentScore + 1,
+            resources: {
+              ...prevState.resources,
+              matter: prevState.resources.matter+1,
+            },
             // ball: {
             //   ...prevState.ball,
             // x: prevState.ball.x-(prevState.ball.vx * bounce*0.5),
@@ -1207,6 +1229,7 @@ class OrbitGame extends Component {
       res.matter += res.mInc;
       res.energy += res.eInc;
       res.psi += res.psiInc;
+      res.psiFlux += res.psiChoir;
       this.setState({ resources: res});
     }
   }
@@ -1402,7 +1425,7 @@ const StatsDisplay = ({ ui }) => (
   <div className="interface-element" style={{fontSize:"1.1em",margin:'0.2em auto 0.2em 2em',width:"100%",padding:"0.1em",transitionDuration:'0',display:"block"}}>
   <p style={{textAlign:'left'}}>{`Stage: ${ui.stage}`}</p>
   <p style={{textAlign:'left'}}>{`Stable matter: ${ui.resources.matter} (+${ui.resources.mInc}) || Stable energy: ${ui.resources.energy} (+${ui.resources.eInc}) || Dark matter: 0 || Dark energy: 0`}</p>
-  <p style={{textAlign:'left'}}>{`Concentration: ${ui.resources.psi} (+${ui.resources.psiInc}) || Flux: 0 || Choir: 0 || Communion: ${ui.currentScore}`}</p>
+  <p style={{textAlign:'left'}}>{`Concentration: ${ui.resources.psi} (+${ui.resources.psiInc}) || Flux: ${ui.resources.psiFlux} || Choir: ${ui.resources.psiChoir} || Communion: ${ui.currentScore}`}</p>
   </div>
 );
 
@@ -1700,7 +1723,7 @@ class ringStructure {
     this.width = width;
     this.hue = hue;
     this.glow = 0.5;
-    this.regen = 4;
+    this.regen = 3;
     this.segments = [];
     this.vulnSeg = [];
     this.name = name;
@@ -1785,7 +1808,7 @@ class ringStructure {
         seg.health+=seg.health<0?0.5:int<this.regen/2?1:0;
         //experimental: update cartesian coords here
         let tc = Victor(seg.r,0);
-        seg.dir>0?tc.rotate(seg.a+(6*seg.arcLength/5)):tc.rotate(seg.b-(6*seg.arcLength/5));
+        seg.dir>0?tc.rotate(seg.a+(4*seg.arcLength/5)):tc.rotate(seg.b-(4*seg.arcLength/5));
         seg.x = seg.origin.x+tc.x*0.97
         seg.y = seg.origin.y+tc.y*0.97;
         // console.log(seg.x+" "+seg.y);
@@ -2316,13 +2339,14 @@ class GameCanvas extends React.Component {
                 // let tc = Victor(seg.r,0);
                 // seg.dir>0?tc.rotate(seg.a+(6*seg.arcLength/5)):tc.rotate(seg.b-(6*seg.arcLength/5));
                 // let target = {x: seg.origin.x+tc.x*0.97, y: seg.origin.y+tc.y*0.97};
-                let target = {x: seg.x, y: seg.y};
-                console.log(target);
+
 
                 //draw
                 this.proton2.blastEmitters[numBlasts-1] = this.createBlastEmitter(0,40,0.2,1,o,seg,50/this.props.beamBlast);
-                this.proton2.addEmitter(this.proton2.blastEmitters[numBlasts-1]);
-                this.proton2.blastEmitters[numBlasts-1].emit(Math.abs(this.props.beamBlast/10))
+                let em = this.proton2.blastEmitters[numBlasts-1]
+                // em.deadZone = em.addBehaviour(new Proton.CrossZone(new Proton.CircleZone(seg.x,seg.y,30),'dead'));
+                this.proton2.addEmitter(em);
+                em.emit(Math.abs(this.props.beamBlast/10))
               }
             }
           }
@@ -2399,6 +2423,7 @@ class GameCanvas extends React.Component {
     emitter.addBehaviour(new Proton.Color('#8F1580','#FEAEFF'));
     emitter.addBehaviour(new Proton.Scale(s1,s2));
     emitter.addBehaviour(new Proton.CrossZone(new Proton.RectZone(0,0,700,700),'bounce'));
+
     emitter.blastAttract = new Proton.Attraction(target, 35, 600);
     emitter.addBehaviour(emitter.blastAttract);
     if (origin) {
